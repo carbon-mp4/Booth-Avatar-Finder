@@ -68,8 +68,11 @@ function parseItems(html: string): ScrapedItem[] {
   return items;
 }
 
-// Static files
-app.use(express.static(path.join(__dirname, '..', 'public')));
+// Static files from project root (only required assets)
+const ROOT_DIR = path.join(__dirname, '..');
+app.get('/', (_req, res) => res.sendFile(path.join(ROOT_DIR, 'index.html')));
+app.get('/app.js', (_req, res) => res.sendFile(path.join(ROOT_DIR, 'app.js')));
+app.get('/style.css', (_req, res) => res.sendFile(path.join(ROOT_DIR, 'style.css')));
 
 // GET /api/avatars?q=xxx
 app.get('/api/avatars', (req, res) => {
