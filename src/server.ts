@@ -22,8 +22,7 @@ function setCached(key: string, data: unknown): void {
 const BOOTH_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 };
-const BOOTH_BROWSE_URL =
-  'https://booth.pm/ja/browse/3D%E3%82%AD%E3%83%A3%E3%83%A9%E3%82%AF%E3%82%BF%E3%83%BC';
+const BOOTH_SEARCH_BASE = 'https://booth.pm/ja/search';
 
 interface ScrapedItem {
   id: number;
@@ -97,18 +96,18 @@ app.get('/api/avatars', (req, res) => {
   res.json(avatars);
 });
 
-// 1フロントページ(=約150件)あたり何Boothページ分を並列取得するか
-// Booth側の1ページ件数は条件で変動するため、150件に届きやすいよう広めに取得する
-const PAGES_PER_BATCH = 20;
+const PAGES_PER_BATCH = 5;
 const ITEMS_PER_PAGE = 150;
+const VALID_SORTS = new Set(['', 'new', 'wish_lists', 'price_desc', 'price_asc']);
 
 async function fetchBoothPage(
-  baseParams: Record<string, string>,
+  searchUrl: string,
+  params: Record<string, string>,
   boothPage: number,
 ): Promise<{ items: ScrapedItem[]; has_next: boolean } | null> {
   try {
-    const response = await axios.get<string>(BOOTH_BROWSE_URL, {
-      params: { ...baseParams, page: String(boothPage) },
+    const response = await axios.get<string>(searchUrl, {
+      params: { ...params, page: String(boothPage) },
       headers: BOOTH_HEADERS,
       timeout: 15000,
       responseType: 'text',
@@ -122,11 +121,13 @@ async function fetchBoothPage(
   }
 }
 
-// GET /api/items?avatar_id=xxx&keyword=xxx&page=1
+// GET /api/items?avatar_id=xxx&keyword=xxx&sort=xxx&page=1
 app.get('/api/items', async (req, res) => {
   const avatar_id_raw = ((req.query.avatar_id as string) || '').trim();
   const avatar_id = /^\d+$/.test(avatar_id_raw) ? avatar_id_raw : '';
   const keyword = ((req.query.keyword as string) || '').trim();
+  const sortRaw = ((req.query.sort as string) || '').trim();
+  const sort = VALID_SORTS.has(sortRaw) ? sortRaw : '';
   const page = Math.max(1, parseInt((req.query.page as string) || '1', 10) || 1);
   const mergedQuery = [avatar_id, keyword].filter(Boolean).join(' ').trim();
 
@@ -135,22 +136,21 @@ app.get('/api/items', async (req, res) => {
     return;
   }
 
-  const cacheKey = `items:${avatar_id}:${mergedQuery}:${page}`;
+  const cacheKey = `items:${avatar_id}:${keyword}:${sort}:${page}`;
   const cached = getCached(cacheKey);
   if (cached) { res.json(cached); return; }
 
   try {
-    const baseParams: Record<string, string> = { sort: 'new_arrivals' };
-    baseParams['q'] = mergedQuery;
+    const searchUrl = `${BOOTH_SEARCH_BASE}/${encodeURIComponent(mergedQuery)}`;
+    const baseParams: Record<string, string> = { 'tags[]': 'VRChat' };
+    if (sort) baseParams['sort'] = sort;
 
-    // フロントのpage=1 → Boothのpage 1,2,3 を並列取得
     const boothPages = Array.from(
       { length: PAGES_PER_BATCH },
       (_, i) => (page - 1) * PAGES_PER_BATCH + i + 1,
     );
-    const results = await Promise.all(boothPages.map(p => fetchBoothPage(baseParams, p)));
+    const results = await Promise.all(boothPages.map(p => fetchBoothPage(searchUrl, baseParams, p)));
 
-    // 重複なしで結合
     const seenIds = new Set<number>();
     const items: ScrapedItem[] = [];
     for (const r of results) {
@@ -162,8 +162,6 @@ app.get('/api/items', async (req, res) => {
         }
       }
     }
-
-    items.sort((a, b) => b.liked - a.liked);
 
     const has_next = items.length > ITEMS_PER_PAGE || results.some(r => r?.has_next ?? false);
     const result   = { items: items.slice(0, ITEMS_PER_PAGE), page, has_next };

@@ -3,6 +3,7 @@ let selectedAvatar  = null;
 let currentPage     = 1;
 let lastHasNext     = false;
 let seenItemIds     = new Set();
+let isSearching     = false;
 
 let allAvatars  = [];
 let avatarPage  = 1;
@@ -13,6 +14,12 @@ let favorites = new Set(JSON.parse(localStorage.getItem('booth-favorites') || '[
 
 function saveFavorites() {
   localStorage.setItem('booth-favorites', JSON.stringify([...favorites]));
+}
+
+function setSearching(busy) {
+  isSearching = busy;
+  const overlay = document.getElementById('avatar-loading-overlay');
+  overlay.classList.toggle('visible', busy);
 }
 
 // ── 起動 ──────────────────────────────────────────────────────────────
@@ -29,6 +36,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     .addEventListener('keypress', e => {
       if (e.key === 'Enter') searchItems();
     });
+
+  document.getElementById('sort-select')
+    .addEventListener('change', () => searchItems());
 
   // 価格スライダー
   const sliderMax = document.getElementById('price-max');
@@ -149,6 +159,8 @@ function renderAvatarPagination() {
 
 // ── アバター選択 ───────────────────────────────────────────────────────
 async function selectAvatar(avatar) {
+  if (isSearching) return;
+
   selectedAvatar = avatar;
   currentPage = 1;
 
@@ -180,8 +192,7 @@ let allLoadedItems = [];
 async function searchItems(append = false) {
   const userKeyword = document.getElementById('keyword-input').value.trim();
   const avatarId = selectedAvatar?.id ? String(selectedAvatar.id) : '';
-  const keyword = [avatarId, userKeyword].filter(Boolean).join(' ').trim();
-  if (!keyword) return;
+  if (!avatarId && !userKeyword) return;
 
   if (!append) {
     currentPage = 1;
@@ -191,16 +202,19 @@ async function searchItems(append = false) {
   }
   document.getElementById('pagination').innerHTML = '';
 
-  // 検索中タグを表示
   const statusEl = document.getElementById('search-status');
   statusEl.innerHTML = avatarId
     ? `<span class="search-status-label">検索ID</span><span class="search-status-tag">${esc(avatarId)}</span>`
     : '';
 
+  setSearching(true);
+
   try {
+    const sort = document.getElementById('sort-select').value;
     const params = new URLSearchParams({ page: String(currentPage) });
-    if (avatarId)  params.set('avatar_id', avatarId);
-    if (keyword)   params.set('keyword', keyword);
+    if (avatarId)    params.set('avatar_id', avatarId);
+    if (userKeyword) params.set('keyword', userKeyword);
+    if (sort)        params.set('sort', sort);
 
     const res = await fetch(`/api/items?${params}`);
     const data = await res.json();
@@ -214,6 +228,8 @@ async function searchItems(append = false) {
   } catch (e) {
     document.getElementById('items-grid').innerHTML =
       `<div class="empty">エラーが発生しました: ${esc(e.message)}</div>`;
+  } finally {
+    setSearching(false);
   }
 }
 
