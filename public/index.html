@@ -19,8 +19,14 @@
         <h2>アバター一覧</h2>
         <input type="text" id="avatar-search" placeholder="アバター名で絞り込み..." autocomplete="off">
       </div>
-      <div id="avatar-list">
-        <div class="loading">読み込み中...</div>
+      <div id="avatar-list-wrapper">
+        <div id="avatar-list">
+          <div class="loading">読み込み中...</div>
+        </div>
+        <div id="avatar-loading-overlay">
+          <div class="overlay-spinner"></div>
+          <span class="overlay-text">読み込み中...</span>
+        </div>
       </div>
       <div id="avatar-pagination"></div>
     </aside>
@@ -28,8 +34,17 @@
     <!-- Right: Items -->
     <section class="items-panel">
       <div class="items-header">
-        <div id="selected-info">
-          <span class="placeholder-text">← アバターを選択してください</span>
+        <div class="items-header-top">
+          <div id="selected-info">
+            <span class="placeholder-text">← アバターを選択してください</span>
+          </div>
+          <select id="sort-select">
+            <option value="">人気順</option>
+            <option value="new">新着順</option>
+            <option value="wish_lists">スキ順</option>
+            <option value="price_desc">高い順</option>
+            <option value="price_asc">安い順</option>
+          </select>
         </div>
         <div class="search-row">
           <div class="tag-area" id="tag-area"></div>
