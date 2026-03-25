@@ -97,6 +97,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
   window.addEventListener('resize', () => setAvatarDrawerOpen(false));
 
+  // Mobile: 初期表示でドロワーを開く
+  if (isMobile()) setAvatarDrawerOpen(true);
+
   // Mobile: トップへ戻るボタン
   const scrollTopBtn = document.getElementById('scroll-top-btn');
   if (scrollTopBtn) {
