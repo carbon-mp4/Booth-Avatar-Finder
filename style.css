@@ -464,7 +464,18 @@ main {
 }
 
 @media (max-width: 768px) {
-  main { position: relative; }
+  /* ページ全体をスクロール可能に */
+  body {
+    height: auto;
+    overflow: auto;
+  }
+
+  main {
+    position: relative;
+    overflow: visible;
+    flex: none;
+    min-height: 0;
+  }
 
   .hamburger-btn {
     display: inline-flex;
@@ -472,7 +483,7 @@ main {
 
   /* ドロワーは閉じると画面外へスライド */
   .avatar-panel {
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
     height: 100%;
@@ -487,16 +498,37 @@ main {
     transform: translateX(0);
   }
 
+  .mobile-overlay {
+    position: fixed;
+    inset: 0;
+  }
+
   body.avatar-drawer-open .mobile-overlay {
     opacity: 1;
     pointer-events: all;
   }
 
-  /* 商品グリッド: 最低2列 */
+  /* items-panel: ページスクロールに委ねる */
+  .items-panel {
+    overflow: visible;
+    flex: none;
+  }
+
+  /* ヘッダーをスクロール時に上に固定 */
+  .items-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--surface);
+  }
+
+  /* 商品グリッド: 最低2列・独自スクロール解除 */
   #items-grid {
     grid-template-columns: repeat(2, 1fr);
     padding: 10px;
     gap: 8px;
+    overflow: visible;
+    flex: none;
   }
 
   .item-card {
@@ -518,5 +550,10 @@ main {
   .loading, .empty {
     text-align: center;
     width: 100%;
+  }
+
+  /* ページネーションも下に流す */
+  #pagination {
+    flex-shrink: 0;
   }
 }
