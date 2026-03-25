@@ -539,9 +539,9 @@ main {
     background: var(--surface);
   }
 
-  /* 商品グリッド: 独自スクロール解除・列数は480px以下で固定2列 */
+  /* 商品グリッド: 独自スクロール解除・3列固定 */
   #items-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(3, 1fr);
     padding: 10px;
     gap: 8px;
     overflow: visible;
