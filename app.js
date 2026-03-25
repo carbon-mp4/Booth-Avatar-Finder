@@ -100,13 +100,44 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Mobile: トップへ戻るボタン
   const scrollTopBtn = document.getElementById('scroll-top-btn');
   if (scrollTopBtn) {
-    window.addEventListener('scroll', () => {
-      scrollTopBtn.classList.toggle('visible', window.scrollY > 300);
-    }, { passive: true });
+    const onScroll = () => {
+      const y = window.scrollY || document.documentElement.scrollTop || document.body.scrollTop;
+      scrollTopBtn.classList.toggle('visible', y > 200);
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    document.addEventListener('scroll', onScroll, { passive: true });
     scrollTopBtn.addEventListener('click', () => {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      document.documentElement.scrollTop = 0;
+      document.body.scrollTop = 0;
     });
   }
+
+  // Mobile: スワイプでアバタードロワー開閉
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const SWIPE_MIN = 50;
+  const LEFT_EDGE = 40;
+
+  document.addEventListener('touchstart', e => {
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+  }, { passive: true });
+
+  document.addEventListener('touchend', e => {
+    if (!isMobile()) return;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if (Math.abs(dy) > Math.abs(dx)) return; // 縦スワイプは無視
+    // 左端から右スワイプ → 開く
+    if (touchStartX < LEFT_EDGE && dx > SWIPE_MIN) {
+      setAvatarDrawerOpen(true);
+    }
+    // 左スワイプ → 閉じる
+    if (document.body.classList.contains('avatar-drawer-open') && dx < -SWIPE_MIN) {
+      setAvatarDrawerOpen(false);
+    }
+  }, { passive: true });
 });
 
 // ── 価格パース ─────────────────────────────────────────────────────────

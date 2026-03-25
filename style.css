@@ -478,10 +478,13 @@ main {
 }
 
 @media (max-width: 768px) {
-  /* ページ全体をスクロール可能に */
-  body {
+  /* ページ全体をスクロール可能に・横はみ出し防止 */
+  html, body {
     height: auto;
-    overflow: auto;
+    overflow-x: hidden;
+  }
+  body {
+    overflow-y: auto;
   }
 
   main {
@@ -554,6 +557,18 @@ main {
   /* ページネーションも下に流す */
   #pagination {
     flex-shrink: 0;
+  }
+
+  /* キーワード入力を横幅に合わせて伸縮 */
+  #keyword-input {
+    flex: 1;
+    min-width: 100px;
+    width: auto;
+  }
+
+  /* フィルター行もラップ */
+  .filter-row {
+    flex-wrap: wrap;
   }
 
   /* トップへ戻るボタン */
