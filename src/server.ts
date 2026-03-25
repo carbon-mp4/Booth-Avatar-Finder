@@ -23,6 +23,7 @@ const BOOTH_HEADERS = {
   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
 };
 const BOOTH_SEARCH_BASE = 'https://booth.pm/ja/search';
+const ITEM_JSON_BASE = 'https://booth.pm/ja/items';
 
 interface ScrapedItem {
   id: number;
@@ -66,6 +67,28 @@ function parseItems(html: string): ScrapedItem[] {
     });
   }
   return items;
+}
+
+async function fetchShopName(id: number): Promise<string> {
+  const cacheKey = `shopname:${id}`;
+  const cached = getCached(cacheKey);
+  if (typeof cached === 'string') return cached;
+
+  try {
+    const json = await axios.get<{ shop?: { name?: string } }>(
+      `${ITEM_JSON_BASE}/${id}.json`,
+      {
+        headers: { ...BOOTH_HEADERS, Accept: 'application/json' },
+        timeout: 10000,
+      },
+    );
+    const shopNameRaw = json.data?.shop?.name ?? '';
+    const shopName = decodeHtml(shopNameRaw);
+    if (shopName) setCached(cacheKey, shopName);
+    return shopName;
+  } catch {
+    return '';
+  }
 }
 
 // Static files from project root (only required assets)
@@ -167,7 +190,33 @@ app.get('/api/items', async (req, res) => {
     }
 
     const has_next = items.length > ITEMS_PER_PAGE || results.some(r => r?.has_next ?? false);
-    const result   = { items: items.slice(0, ITEMS_PER_PAGE), page, has_next };
+    const pageItems = items.slice(0, ITEMS_PER_PAGE);
+
+    // `data-product-brand` は「ショップ名/作者名」とズレるケースがあるため、
+    // item json から shop.name を引いて上書きする（正確性優先）
+    const idToItems = new Map<number, ScrapedItem[]>();
+    for (const it of pageItems) {
+      const list = idToItems.get(it.id) ?? [];
+      list.push(it);
+      idToItems.set(it.id, list);
+    }
+
+    const uniqueIds = Array.from(idToItems.keys());
+    const concurrency = 6; // サーバ負荷/Booth側のレート制限を考慮
+    let cursor = 0;
+    const workers = Array.from({ length: concurrency }, async () => {
+      while (cursor < uniqueIds.length) {
+        const id = uniqueIds[cursor++];
+        const shopName = await fetchShopName(id);
+        if (!shopName) continue;
+        for (const it of idToItems.get(id) ?? []) {
+          it.shop_name = shopName;
+        }
+      }
+    });
+    await Promise.all(workers);
+
+    const result = { items: pageItems, page, has_next };
     setCached(cacheKey, result);
     res.json(result);
   } catch (err: unknown) {
