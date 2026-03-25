@@ -8,13 +8,26 @@
 </head>
 <body>
   <header>
-    <h1>Booth Avatar Finder</h1>
-    <p class="subtitle">アバターを選んで、対応アイテムをBoothで探そう</p>
+    <div class="header-row">
+      <button
+        id="hamburger-btn"
+        class="hamburger-btn"
+        aria-label="アバター一覧を開く"
+        aria-controls="avatar-panel"
+        aria-expanded="false"
+        type="button"
+      >&#9776;</button>
+      <div class="header-titles">
+        <h1>Booth Avatar Finder</h1>
+        <p class="subtitle">アバターを選んで、対応アイテムをBoothで探そう</p>
+      </div>
+    </div>
   </header>
 
   <main>
+    <div id="mobile-overlay" class="mobile-overlay" aria-hidden="true"></div>
     <!-- Left: Avatar list -->
-    <aside class="avatar-panel">
+    <aside id="avatar-panel" class="avatar-panel">
       <div class="panel-header">
         <h2>アバター一覧</h2>
         <input type="text" id="avatar-search" placeholder="アバター名で絞り込み..." autocomplete="off">

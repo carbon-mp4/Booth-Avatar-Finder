@@ -420,3 +420,75 @@ main {
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 ::-webkit-scrollbar-thumb:hover { background: var(--accent); }
+
+/* ── Header Row (Mobile) ─────────────────────────────────────────────── */
+.header-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.header-titles {
+  display: flex;
+  flex-direction: column;
+}
+
+.hamburger-btn {
+  display: none;
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text);
+  cursor: pointer;
+  font-size: 1.1rem;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  transition: border-color .2s, background .15s;
+}
+.hamburger-btn:hover {
+  border-color: var(--accent);
+  background: rgba(192, 132, 252, .08);
+}
+
+/* ── Mobile Drawer (Avatar Panel) ─────────────────────────────────────── */
+.mobile-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  background: rgba(0, 0, 0, .55);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .2s;
+}
+
+@media (max-width: 768px) {
+  main { position: relative; }
+
+  .hamburger-btn {
+    display: inline-flex;
+  }
+
+  /* ドロワーは閉じると画面外へスライド */
+  .avatar-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    z-index: 30;
+    transform: translateX(-100%);
+    transition: transform .2s ease;
+    min-width: 300px;
+    width: 300px;
+  }
+
+  body.avatar-drawer-open .avatar-panel {
+    transform: translateX(0);
+  }
+
+  body.avatar-drawer-open .mobile-overlay {
+    opacity: 1;
+    pointer-events: all;
+  }
+}

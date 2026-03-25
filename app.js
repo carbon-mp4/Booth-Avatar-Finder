@@ -22,6 +22,29 @@ function setSearching(busy) {
   overlay.classList.toggle('visible', busy);
 }
 
+// ── Mobile: Avatar drawer toggle ──────────────────────────────────────────
+function isMobile() {
+  return window.matchMedia('(max-width: 768px)').matches;
+}
+
+function setAvatarDrawerOpen(open) {
+  if (!isMobile()) {
+    document.body.classList.remove('avatar-drawer-open');
+    return;
+  }
+
+  document.body.classList.toggle('avatar-drawer-open', open);
+
+  const btn = document.getElementById('hamburger-btn');
+  if (btn) {
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    btn.setAttribute(
+      'aria-label',
+      open ? 'アバター一覧を閉じる' : 'アバター一覧を開く'
+    );
+  }
+}
+
 // ── 起動 ──────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', async () => {
   await loadAvatars();
@@ -56,6 +79,23 @@ document.addEventListener('DOMContentLoaded', async () => {
     updatePriceLabel();
     renderItems(allLoadedItems, lastHasNext);
   });
+
+  // Mobile: hamburger open/close (アバター選択時は自動で閉じる)
+  const hamburgerBtn = document.getElementById('hamburger-btn');
+  const overlay = document.getElementById('mobile-overlay');
+  if (hamburgerBtn) {
+    hamburgerBtn.addEventListener('click', () => {
+      const open = !document.body.classList.contains('avatar-drawer-open');
+      setAvatarDrawerOpen(open);
+    });
+  }
+  if (overlay) {
+    overlay.addEventListener('click', () => setAvatarDrawerOpen(false));
+  }
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Escape') setAvatarDrawerOpen(false);
+  });
+  window.addEventListener('resize', () => setAvatarDrawerOpen(false));
 });
 
 // ── 価格パース ─────────────────────────────────────────────────────────
@@ -175,6 +215,9 @@ async function selectAvatar(avatar) {
 
   selectedAvatar = avatar;
   currentPage = 1;
+
+  // モバイルではアバター選択時に一覧を閉じて商品欄を広げる
+  setAvatarDrawerOpen(false);
 
   document.querySelectorAll('.avatar-card').forEach(c => {
     c.classList.toggle('selected', parseInt(c.dataset.id) === avatar.id);
