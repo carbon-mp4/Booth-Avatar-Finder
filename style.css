@@ -556,4 +556,40 @@ main {
   #pagination {
     flex-shrink: 0;
   }
+
+  /* トップへ戻るボタン */
+  .scroll-top-btn {
+    display: flex;
+  }
+}
+
+/* トップへ戻るボタン (モバイル専用) */
+.scroll-top-btn {
+  display: none;
+  position: fixed;
+  bottom: 24px;
+  right: 20px;
+  z-index: 100;
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  color: #fff;
+  border: none;
+  font-size: 1.5rem;
+  line-height: 1;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 16px rgba(192, 132, 252, .4);
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .25s, transform .25s;
+}
+.scroll-top-btn.visible {
+  opacity: 1;
+  pointer-events: all;
+}
+.scroll-top-btn:hover {
+  transform: translateY(-3px);
 }

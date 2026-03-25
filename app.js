@@ -96,6 +96,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (e.key === 'Escape') setAvatarDrawerOpen(false);
   });
   window.addEventListener('resize', () => setAvatarDrawerOpen(false));
+
+  // Mobile: トップへ戻るボタン
+  const scrollTopBtn = document.getElementById('scroll-top-btn');
+  if (scrollTopBtn) {
+    window.addEventListener('scroll', () => {
+      scrollTopBtn.classList.toggle('visible', window.scrollY > 300);
+    }, { passive: true });
+    scrollTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  }
 });
 
 // ── 価格パース ─────────────────────────────────────────────────────────
