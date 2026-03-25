@@ -72,14 +72,26 @@ function applyPriceFilter(items) {
 
 // ── アバター一覧 ───────────────────────────────────────────────────────
 async function loadAvatars(q = '') {
-  const res = await fetch(`/api/avatars?q=${encodeURIComponent(q)}`);
-  let avatars = await res.json();
-  allAvatars = [
-    ...avatars.filter(a => favorites.has(a.id)),
-    ...avatars.filter(a => !favorites.has(a.id)),
-  ];
-  avatarPage = 1;
-  renderAvatars();
+  const list = document.getElementById('avatar-list');
+  list.innerHTML = '<div class="loading">読み込み中...</div>';
+  try {
+    const res = await fetch(`/api/avatars?q=${encodeURIComponent(q)}`);
+    if (!res.ok) {
+      throw new Error(`HTTP ${res.status}`);
+    }
+    let avatars = await res.json();
+    allAvatars = [
+      ...avatars.filter(a => favorites.has(a.id)),
+      ...avatars.filter(a => !favorites.has(a.id)),
+    ];
+    avatarPage = 1;
+    renderAvatars();
+  } catch (e) {
+    allAvatars = [];
+    avatarPage = 1;
+    list.innerHTML = `<div class="empty">アバター一覧の取得に失敗しました: ${esc(e.message)}</div>`;
+    document.getElementById('avatar-pagination').innerHTML = '';
+  }
 }
 
 function renderAvatars() {
