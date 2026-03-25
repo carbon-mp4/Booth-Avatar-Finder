@@ -3,6 +3,6 @@ services:
     name: booth-avatar-finder
     env: node
     plan: free
-    buildCommand: npm install && npm run build
+    buildCommand: "npm install && npm run build"
     startCommand: npm start
     healthCheckPath: /api/avatars
