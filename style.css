@@ -5,15 +5,15 @@
   --surface:      #ffffff;
   --card:         #ffffff;
   --card-hover:   #f0f0f5;
-  --accent:       #7c3aed;
-  --accent2:      #db2777;
+  --accent:       #3b82f6;
+  --accent2:      #60a5fa;
   --text:         #1a1a2e;
   --text-muted:   #6b7280;
-  --border:       #e0e0ea;
-  --selected-bg:  #f3eeff;
-  --selected-border: #7c3aed;
-  --tag-bg:       #f0ebff;
-  --tag-active:   #7c3aed;
+  --border:       #e0e6f0;
+  --selected-bg:  #eff6ff;
+  --selected-border: #3b82f6;
+  --tag-bg:       #eff6ff;
+  --tag-active:   #3b82f6;
 }
 
 body {
@@ -349,7 +349,7 @@ main {
 }
 .item-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(124, 58, 237, .15);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, .15);
   border-color: var(--accent);
 }
 
@@ -458,7 +458,7 @@ main {
 }
 .hamburger-btn:hover {
   border-color: var(--accent);
-  background: rgba(124, 58, 237, .08);
+  background: rgba(59, 130, 246, .08);
 }
 
 /* ── Mobile Drawer (Avatar Panel) ─────────────────────────────────────── */
@@ -592,7 +592,7 @@ main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(124, 58, 237, .3);
+  box-shadow: 0 4px 16px rgba(59, 130, 246, .3);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s, transform .25s;
