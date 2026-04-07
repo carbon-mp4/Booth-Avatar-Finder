@@ -35,10 +35,7 @@ header {
 }
 header h1 {
   font-size: 1.2rem;
-  background: linear-gradient(90deg, var(--accent), var(--accent2));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: var(--accent);
 }
 .subtitle { font-size: 0.75rem; color: var(--text-muted); margin-top: 2px; }
 
@@ -295,7 +292,7 @@ main {
 
 #search-btn {
   padding: 8px 18px;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: var(--accent);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -587,7 +584,7 @@ main {
   width: 46px;
   height: 46px;
   border-radius: 50%;
-  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  background: var(--accent);
   color: #fff;
   border: none;
   font-size: 1.5rem;
