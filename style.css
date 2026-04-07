@@ -1,18 +1,18 @@
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
 :root {
-  --bg:           #12121f;
-  --surface:      #1a1a2e;
-  --card:         #1e1e35;
-  --card-hover:   #252540;
-  --accent:       #c084fc;
-  --accent2:      #f472b6;
-  --text:         #e2e8f0;
-  --text-muted:   #94a3b8;
-  --border:       #2d2d4e;
-  --selected-bg:  #2a1f3d;
-  --selected-border: #c084fc;
-  --tag-bg:       #2d1b4e;
+  --bg:           #f5f5f7;
+  --surface:      #ffffff;
+  --card:         #ffffff;
+  --card-hover:   #f0f0f5;
+  --accent:       #7c3aed;
+  --accent2:      #db2777;
+  --text:         #1a1a2e;
+  --text-muted:   #6b7280;
+  --border:       #e0e0ea;
+  --selected-bg:  #f3eeff;
+  --selected-border: #7c3aed;
+  --tag-bg:       #f0ebff;
   --tag-active:   #7c3aed;
 }
 
@@ -105,7 +105,7 @@ main {
 #avatar-loading-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(18, 18, 31, .75);
+  background: rgba(245, 245, 247, .85);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -352,7 +352,7 @@ main {
 }
 .item-card:hover {
   transform: translateY(-3px);
-  box-shadow: 0 8px 24px rgba(192, 132, 252, .2);
+  box-shadow: 0 8px 24px rgba(124, 58, 237, .15);
   border-color: var(--accent);
 }
 
@@ -461,7 +461,7 @@ main {
 }
 .hamburger-btn:hover {
   border-color: var(--accent);
-  background: rgba(192, 132, 252, .08);
+  background: rgba(124, 58, 237, .08);
 }
 
 /* ── Mobile Drawer (Avatar Panel) ─────────────────────────────────────── */
@@ -595,7 +595,7 @@ main {
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 4px 16px rgba(192, 132, 252, .4);
+  box-shadow: 0 4px 16px rgba(124, 58, 237, .3);
   opacity: 0;
   pointer-events: none;
   transition: opacity .25s, transform .25s;
